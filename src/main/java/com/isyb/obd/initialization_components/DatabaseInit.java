@@ -7,19 +7,24 @@ import com.isyb.obd.models.repos.EngineInfoFieldRepository;
 import com.isyb.obd.validators.*;
 import jakarta.persistence.Table;
 import jakarta.transaction.Transactional;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
+ * //import org.apache.logging.log4j.LogManager;
+ * //import org.apache.logging.log4j.Logger;
+ * import org.apache.log4j.LogManager;
+ * import org.apache.log4j.Logger;
  * <p>Клас <code>DatabaseInit</code> є компонентом Spring, який реалізує інтерфейс <code>ApplicationRunner</code>. Він запускається при старті додатка і виконує ініціалізацію бази даних.</p>
  * <p>Основні кроки роботи класу:</p>
  * <ol>
@@ -41,6 +46,8 @@ public class DatabaseInit implements ApplicationRunner {
     @Autowired
     private final EngineInfoFieldRepository engineInfoFieldRepository;
 
+    private static final Logger log = LogManager.getLogger(DatabaseInit.class);
+
     public DatabaseInit(EngineInfoFieldRepository engineInfoFieldRepository) {
         this.engineInfoFieldRepository = engineInfoFieldRepository;
     }
@@ -48,19 +55,22 @@ public class DatabaseInit implements ApplicationRunner {
     @Transactional
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        List<EngineInfoField> fields = new ArrayList<>();
+        log.info("Step 1: initialization database: сhecking the presence of columns in table engine_info through table engine_info_fields");
+        List<EngineInfoField> fields = engineInfoFieldRepository.findAll();
 
-//        Готуємось занести ці дані в базу даних, але спочатку необхідно провалідувати
-        fields.addAll(
-                List.of(
-                        new EngineInfoField(1, "0", "timestamp"),
-                        new EngineInfoField(2, "a", "latitude"),
-                        new EngineInfoField(3, "b", "longitude"),
-                        new EngineInfoField(4, "24", "voltage"),
-                        new EngineInfoField(5, "82", "temperature")
-                )
-        );
+        if (fields.isEmpty()) {
+            //        Готуємось занести ці дані в базу даних, але спочатку необхідно провалідувати
+            fields.addAll(
+                    List.of(
+                            new EngineInfoField(1L, "0", "timestamp"),
+                            new EngineInfoField(2L, "a", "latitude"),
+                            new EngineInfoField(3L, "b", "longitude"),
+                            new EngineInfoField(4L, "24", "voltage"),
+                            new EngineInfoField(5L, "82", "temperature")
+                    )
+            );
 
+        }
 //        Викликаємо метод для валідації
         List<ValidationResult> validationResults = new DatabaseInitValidator().doValid(fields);
 
@@ -68,8 +78,9 @@ public class DatabaseInit implements ApplicationRunner {
         for (ValidationResult validationResult : validationResults) {
             if (!validationResult.isValid()) {
 //                Якщо щось пішло не так, то необхідно закінчити запуск додатку
-//                TODO: детально залогировать информацию
-                throw new StopStartup();
+
+                log.fatal("Step 1: Stop startup");
+                throw new StopStartup("Validation was not passed: " + validationResult.getStringErrors());
             }
         }
 
@@ -81,6 +92,7 @@ public class DatabaseInit implements ApplicationRunner {
     private class DatabaseInitValidator implements ValidatorFacade<List<EngineInfoField>, List<ValidationResult>> {
         @Override
         public List<ValidationResult> doValid(List<EngineInfoField> validationObject) {
+            log.info("Step 1: Beginning of validation");
             ValidatorCoordinator validatorCoordinator = new ValidatorCoordinator<>();
 //            Додаємо кастомні валідатори, в яких описано як валідуємо певний обєкт
             validatorCoordinator.addValidator(new CheckColumnInDatabase());
@@ -95,6 +107,7 @@ public class DatabaseInit implements ApplicationRunner {
         private class CheckColumnInDatabase implements Validator<List<EngineInfoField>> {
             @Override
             public ValidationResult validate(final List<EngineInfoField> obj) {
+                log.info("Step 1: Checking the existence of a column in the table and in the list of cooked fields");
                 ValidationResult validationResult = new ValidationResult();
 
 //                Беремо назву таблиці в базі даних. Зроблено для зручності (DRY)
@@ -114,14 +127,16 @@ public class DatabaseInit implements ApplicationRunner {
                 boolean containsSameElements = columns.size() == allColumnsByTableName.size() && columns.containsAll(allColumnsByTableName);
                 if (containsSameElements) {
 //                    Якщо все ок, то відразу повертаємо результат валідації, щоб не навантажувати додатковими перевірками
+                    log.info("Step 1: The validation was successful. Dimensions match, fields of the engine_info_fields table contain columns of the engine_info table");
                     return validationResult;
                 } else {
 //                    Якщо умова якась не виконалася, то навантажуємо додатковими перевірками для більшої інформативності розробника
                     if (columns.size() != allColumnsByTableName.size()) {
-                        validationResult.add(ValidationError.of("size.columns", "different number of columns, columns.size() = " + columns.size() + ", allColumnsByTableName.size() = " + allColumnsByTableName.size()));
+                        validationResult.add(ValidationError.of("1", "Different number of columns, columns.size() = " + columns.size() + ", allColumnsByTableName.size() = " + allColumnsByTableName.size(), this.getClass()));
                     }
-//                    Якщо columns (підготовлені філди) не містить всі елементи множини allColumnsByTableName, тоді визначаємо які сами елементи
-                    if (!columns.containsAll(allColumnsByTableName)) {
+
+//                    Якщо columns (підготовлені філди) не містить всі елементи множини allColumnsByTableName, або якщо розміри не співпадають тоді визначаємо які сами елементи
+                    if (!columns.containsAll(allColumnsByTableName) || columns.size() != allColumnsByTableName.size()) {
 //                        Отримуємо множину елементів які є в в таблиці БД, але нема в підготовлених даних
                         Set<String> missingInColumns = new HashSet<>(allColumnsByTableName);
                         missingInColumns.removeAll(columns);
@@ -130,11 +145,12 @@ public class DatabaseInit implements ApplicationRunner {
                         Set<String> missingInAllColumnsByTableName = new HashSet<>(columns);
                         missingInAllColumnsByTableName.removeAll(allColumnsByTableName);
 
-                        validationResult.add(ValidationError.of("elements.not.present", "Elements not present in columns but present in allColumnsByTableName: " + missingInColumns + "Elements not present in allColumnsByTableName but present in column: " + missingInAllColumnsByTableName));
+                        validationResult.add(ValidationError.of("1", "Elements not present in columns but present in allColumnsByTableName: " + missingInColumns + "; Elements not present in allColumnsByTableName but present in column: " + missingInAllColumnsByTableName, this.getClass()));
                     }
                 }
 
 
+                log.fatal("Step 1: Validation was not passed: {}", validationResult.getStringErrors());
                 return validationResult;
             }
         }

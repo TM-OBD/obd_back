@@ -21,4 +21,21 @@ public class ValidationResult {
     public List<ValidationError> getErrors() {
         return this.errors;
     }
+
+    public String getStringErrors() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("\n");
+
+        for (ValidationError error : errors) {
+            if (error.getWhere() != null) {
+                stringBuilder.append("\n[" + error.getIdentifier() + "] " + "(" + error.getWhere().getName() + ") " + error.getDescription());
+            } else {
+                stringBuilder.append("\n[" + error.getIdentifier() + "] " + error.getDescription());
+            }
+        }
+
+        stringBuilder.append("\n\n");
+
+        return stringBuilder.toString();
+    }
 }

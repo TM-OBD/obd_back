@@ -33,3 +33,6 @@
 #.vscode/
 
 .idea
+/target/*
+!/target/*.jar
+root.log
