@@ -1,5 +1,6 @@
 package com.isyb.obd.rest;
 
+import com.isyb.obd.ObdApplication;
 import com.isyb.obd.models.repos.EngineInfoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,7 +10,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -20,7 +25,8 @@ import static com.isyb.obd.util.Sources.INFO_V1;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = ApplicationRunner.class, initializers = ConfigDataApplicationContextInitializer.class)
 class EngineInfoControllerV1Test {
 
     @Mock
@@ -30,6 +36,7 @@ class EngineInfoControllerV1Test {
     //    private ObjectMapper objectMapper;
     @InjectMocks
     private EngineInfoControllerV1 engineInfoControllerV1;
+
 
     @BeforeEach
     void setUp() {

@@ -1,9 +1,9 @@
 -------------------------------------------------------------------------------
 Test set: com.isyb.obd.rest.EngineInfoControllerV1Test
 -------------------------------------------------------------------------------
-Tests run: 14, Failures: 0, Errors: 6, Skipped: 0, Time elapsed: 0.892 s <<< FAILURE! -- in com.isyb.obd.rest.EngineInfoControllerV1Test
-com.isyb.obd.rest.EngineInfoControllerV1Test.handleInfoV1(String, ResultMatcher)[1] -- Time elapsed: 0.738 s <<< ERROR!
-jakarta.servlet.ServletException: Request processing failed: java.lang.NullPointerException: Cannot invoke "com.isyb.obd.models.mapper.EngineInfoMapper.toEntity(Object)" because "this.engineInfoMapper" is null
+Tests run: 14, Failures: 0, Errors: 7, Skipped: 0, Time elapsed: 0.849 s <<< FAILURE! -- in com.isyb.obd.rest.EngineInfoControllerV1Test
+com.isyb.obd.rest.EngineInfoControllerV1Test.handleInfoV1(String, ResultMatcher)[1] -- Time elapsed: 0.576 s <<< ERROR!
+jakarta.servlet.ServletException: Request processing failed: java.lang.NullPointerException: Cannot invoke "com.isyb.obd.models.mapper.EngineInfoMapper.toEntity(com.isyb.obd.models.dto.EngineInfoDto)" because "this.this$1.this$0.engineInfoMapper" is null
 	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1022)
 	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
 	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
@@ -13,7 +13,7 @@ jakarta.servlet.ServletException: Request processing failed: java.lang.NullPoint
 	at org.springframework.mock.web.MockFilterChain$ServletFilterProxy.doFilter(MockFilterChain.java:165)
 	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:132)
 	at org.springframework.test.web.servlet.MockMvc.perform(MockMvc.java:201)
-	at com.isyb.obd.rest.EngineInfoControllerV1Test.handleInfoV1(EngineInfoControllerV1Test.java:38)
+	at com.isyb.obd.rest.EngineInfoControllerV1Test.handleInfoV1(EngineInfoControllerV1Test.java:43)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
 	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:183)
 	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
@@ -59,8 +59,14 @@ jakarta.servlet.ServletException: Request processing failed: java.lang.NullPoint
 	at java.base/java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:596)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-Caused by: java.lang.NullPointerException: Cannot invoke "com.isyb.obd.models.mapper.EngineInfoMapper.toEntity(Object)" because "this.engineInfoMapper" is null
-	at com.isyb.obd.rest.EngineInfoControllerV1.handleInfoV1(EngineInfoControllerV1.java:85)
+Caused by: java.lang.NullPointerException: Cannot invoke "com.isyb.obd.models.mapper.EngineInfoMapper.toEntity(com.isyb.obd.models.dto.EngineInfoDto)" because "this.this$1.this$0.engineInfoMapper" is null
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$TryMappingToEntity.validate(EngineInfoControllerV1.java:190)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$TryMappingToEntity.validate(EngineInfoControllerV1.java:177)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$CheckEmptyFields.validate(EngineInfoControllerV1.java:168)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$CheckEmptyFields.validate(EngineInfoControllerV1.java:130)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$CheckFillDto.validate(EngineInfoControllerV1.java:121)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator.doValid(EngineInfoControllerV1.java:78)
+	at com.isyb.obd.rest.EngineInfoControllerV1.handleInfoV1(EngineInfoControllerV1.java:37)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
@@ -76,8 +82,8 @@ Caused by: java.lang.NullPointerException: Cannot invoke "com.isyb.obd.models.ma
 	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
 	... 54 more
 
-com.isyb.obd.rest.EngineInfoControllerV1Test.handleInfoV1(String, ResultMatcher)[9] -- Time elapsed: 0.007 s <<< ERROR!
-jakarta.servlet.ServletException: Request processing failed: java.lang.ArrayIndexOutOfBoundsException: Index 1 out of bounds for length 1
+com.isyb.obd.rest.EngineInfoControllerV1Test.handleInfoV1(String, ResultMatcher)[2] -- Time elapsed: 0.013 s <<< ERROR!
+jakarta.servlet.ServletException: Request processing failed: java.lang.NullPointerException: Cannot invoke "com.isyb.obd.models.mapper.EngineInfoMapper.toEntity(com.isyb.obd.models.dto.EngineInfoDto)" because "this.this$1.this$0.engineInfoMapper" is null
 	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1022)
 	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
 	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
@@ -87,7 +93,7 @@ jakarta.servlet.ServletException: Request processing failed: java.lang.ArrayInde
 	at org.springframework.mock.web.MockFilterChain$ServletFilterProxy.doFilter(MockFilterChain.java:165)
 	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:132)
 	at org.springframework.test.web.servlet.MockMvc.perform(MockMvc.java:201)
-	at com.isyb.obd.rest.EngineInfoControllerV1Test.handleInfoV1(EngineInfoControllerV1Test.java:38)
+	at com.isyb.obd.rest.EngineInfoControllerV1Test.handleInfoV1(EngineInfoControllerV1Test.java:43)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
 	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:183)
 	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
@@ -133,8 +139,14 @@ jakarta.servlet.ServletException: Request processing failed: java.lang.ArrayInde
 	at java.base/java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:596)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-Caused by: java.lang.ArrayIndexOutOfBoundsException: Index 1 out of bounds for length 1
-	at com.isyb.obd.rest.EngineInfoControllerV1.handleInfoV1(EngineInfoControllerV1.java:43)
+Caused by: java.lang.NullPointerException: Cannot invoke "com.isyb.obd.models.mapper.EngineInfoMapper.toEntity(com.isyb.obd.models.dto.EngineInfoDto)" because "this.this$1.this$0.engineInfoMapper" is null
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$TryMappingToEntity.validate(EngineInfoControllerV1.java:190)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$TryMappingToEntity.validate(EngineInfoControllerV1.java:177)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$CheckEmptyFields.validate(EngineInfoControllerV1.java:168)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$CheckEmptyFields.validate(EngineInfoControllerV1.java:130)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$CheckFillDto.validate(EngineInfoControllerV1.java:121)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator.doValid(EngineInfoControllerV1.java:78)
+	at com.isyb.obd.rest.EngineInfoControllerV1.handleInfoV1(EngineInfoControllerV1.java:37)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
@@ -150,8 +162,8 @@ Caused by: java.lang.ArrayIndexOutOfBoundsException: Index 1 out of bounds for l
 	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
 	... 54 more
 
-com.isyb.obd.rest.EngineInfoControllerV1Test.handleInfoV1(String, ResultMatcher)[10] -- Time elapsed: 0.008 s <<< ERROR!
-jakarta.servlet.ServletException: Request processing failed: java.lang.NumberFormatException: For input string: "2041917982;a"
+com.isyb.obd.rest.EngineInfoControllerV1Test.handleInfoV1(String, ResultMatcher)[3] -- Time elapsed: 0.010 s <<< ERROR!
+jakarta.servlet.ServletException: Request processing failed: java.lang.NullPointerException: Cannot invoke "com.isyb.obd.models.mapper.EngineInfoMapper.toEntity(com.isyb.obd.models.dto.EngineInfoDto)" because "this.this$1.this$0.engineInfoMapper" is null
 	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1022)
 	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
 	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
@@ -161,7 +173,7 @@ jakarta.servlet.ServletException: Request processing failed: java.lang.NumberFor
 	at org.springframework.mock.web.MockFilterChain$ServletFilterProxy.doFilter(MockFilterChain.java:165)
 	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:132)
 	at org.springframework.test.web.servlet.MockMvc.perform(MockMvc.java:201)
-	at com.isyb.obd.rest.EngineInfoControllerV1Test.handleInfoV1(EngineInfoControllerV1Test.java:38)
+	at com.isyb.obd.rest.EngineInfoControllerV1Test.handleInfoV1(EngineInfoControllerV1Test.java:43)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
 	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:183)
 	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
@@ -207,11 +219,14 @@ jakarta.servlet.ServletException: Request processing failed: java.lang.NumberFor
 	at java.base/java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:596)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-Caused by: java.lang.NumberFormatException: For input string: "2041917982;a"
-	at java.base/java.lang.NumberFormatException.forInputString(NumberFormatException.java:67)
-	at java.base/java.lang.Long.parseLong(Long.java:711)
-	at java.base/java.lang.Long.parseLong(Long.java:836)
-	at com.isyb.obd.rest.EngineInfoControllerV1.handleInfoV1(EngineInfoControllerV1.java:43)
+Caused by: java.lang.NullPointerException: Cannot invoke "com.isyb.obd.models.mapper.EngineInfoMapper.toEntity(com.isyb.obd.models.dto.EngineInfoDto)" because "this.this$1.this$0.engineInfoMapper" is null
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$TryMappingToEntity.validate(EngineInfoControllerV1.java:190)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$TryMappingToEntity.validate(EngineInfoControllerV1.java:177)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$CheckEmptyFields.validate(EngineInfoControllerV1.java:168)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$CheckEmptyFields.validate(EngineInfoControllerV1.java:130)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$CheckFillDto.validate(EngineInfoControllerV1.java:121)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator.doValid(EngineInfoControllerV1.java:78)
+	at com.isyb.obd.rest.EngineInfoControllerV1.handleInfoV1(EngineInfoControllerV1.java:37)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
@@ -227,8 +242,8 @@ Caused by: java.lang.NumberFormatException: For input string: "2041917982;a"
 	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
 	... 54 more
 
-com.isyb.obd.rest.EngineInfoControllerV1Test.handleInfoV1(String, ResultMatcher)[11] -- Time elapsed: 0.008 s <<< ERROR!
-jakarta.servlet.ServletException: Request processing failed: java.lang.NumberFormatException: For input string: "2041917982;a"
+com.isyb.obd.rest.EngineInfoControllerV1Test.handleInfoV1(String, ResultMatcher)[7] -- Time elapsed: 0.012 s <<< ERROR!
+jakarta.servlet.ServletException: Request processing failed: java.lang.NullPointerException: Cannot invoke "com.isyb.obd.models.mapper.EngineInfoMapper.toEntity(com.isyb.obd.models.dto.EngineInfoDto)" because "this.this$1.this$0.engineInfoMapper" is null
 	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1022)
 	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
 	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
@@ -238,7 +253,7 @@ jakarta.servlet.ServletException: Request processing failed: java.lang.NumberFor
 	at org.springframework.mock.web.MockFilterChain$ServletFilterProxy.doFilter(MockFilterChain.java:165)
 	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:132)
 	at org.springframework.test.web.servlet.MockMvc.perform(MockMvc.java:201)
-	at com.isyb.obd.rest.EngineInfoControllerV1Test.handleInfoV1(EngineInfoControllerV1Test.java:38)
+	at com.isyb.obd.rest.EngineInfoControllerV1Test.handleInfoV1(EngineInfoControllerV1Test.java:43)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
 	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:183)
 	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
@@ -284,11 +299,14 @@ jakarta.servlet.ServletException: Request processing failed: java.lang.NumberFor
 	at java.base/java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:596)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-Caused by: java.lang.NumberFormatException: For input string: "2041917982;a"
-	at java.base/java.lang.NumberFormatException.forInputString(NumberFormatException.java:67)
-	at java.base/java.lang.Long.parseLong(Long.java:711)
-	at java.base/java.lang.Long.parseLong(Long.java:836)
-	at com.isyb.obd.rest.EngineInfoControllerV1.handleInfoV1(EngineInfoControllerV1.java:43)
+Caused by: java.lang.NullPointerException: Cannot invoke "com.isyb.obd.models.mapper.EngineInfoMapper.toEntity(com.isyb.obd.models.dto.EngineInfoDto)" because "this.this$1.this$0.engineInfoMapper" is null
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$TryMappingToEntity.validate(EngineInfoControllerV1.java:190)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$TryMappingToEntity.validate(EngineInfoControllerV1.java:177)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$CheckEmptyFields.validate(EngineInfoControllerV1.java:168)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$CheckEmptyFields.validate(EngineInfoControllerV1.java:130)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$CheckFillDto.validate(EngineInfoControllerV1.java:121)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator.doValid(EngineInfoControllerV1.java:78)
+	at com.isyb.obd.rest.EngineInfoControllerV1.handleInfoV1(EngineInfoControllerV1.java:37)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
@@ -304,8 +322,8 @@ Caused by: java.lang.NumberFormatException: For input string: "2041917982;a"
 	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
 	... 54 more
 
-com.isyb.obd.rest.EngineInfoControllerV1Test.handleInfoV1(String, ResultMatcher)[12] -- Time elapsed: 0.006 s <<< ERROR!
-jakarta.servlet.ServletException: Request processing failed: java.lang.NumberFormatException: For input string: "'45.3535032'"
+com.isyb.obd.rest.EngineInfoControllerV1Test.handleInfoV1(String, ResultMatcher)[12] -- Time elapsed: 0.011 s <<< ERROR!
+jakarta.servlet.ServletException: Request processing failed: java.lang.NullPointerException: Cannot invoke "com.isyb.obd.models.mapper.EngineInfoMapper.toEntity(com.isyb.obd.models.dto.EngineInfoDto)" because "this.this$1.this$0.engineInfoMapper" is null
 	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1022)
 	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
 	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
@@ -315,7 +333,7 @@ jakarta.servlet.ServletException: Request processing failed: java.lang.NumberFor
 	at org.springframework.mock.web.MockFilterChain$ServletFilterProxy.doFilter(MockFilterChain.java:165)
 	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:132)
 	at org.springframework.test.web.servlet.MockMvc.perform(MockMvc.java:201)
-	at com.isyb.obd.rest.EngineInfoControllerV1Test.handleInfoV1(EngineInfoControllerV1Test.java:38)
+	at com.isyb.obd.rest.EngineInfoControllerV1Test.handleInfoV1(EngineInfoControllerV1Test.java:43)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
 	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:183)
 	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
@@ -361,11 +379,14 @@ jakarta.servlet.ServletException: Request processing failed: java.lang.NumberFor
 	at java.base/java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:596)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-Caused by: java.lang.NumberFormatException: For input string: "'45.3535032'"
-	at java.base/jdk.internal.math.FloatingDecimal.readJavaFormatString(FloatingDecimal.java:2054)
-	at java.base/jdk.internal.math.FloatingDecimal.parseDouble(FloatingDecimal.java:110)
-	at java.base/java.lang.Double.parseDouble(Double.java:651)
-	at com.isyb.obd.rest.EngineInfoControllerV1.handleInfoV1(EngineInfoControllerV1.java:51)
+Caused by: java.lang.NullPointerException: Cannot invoke "com.isyb.obd.models.mapper.EngineInfoMapper.toEntity(com.isyb.obd.models.dto.EngineInfoDto)" because "this.this$1.this$0.engineInfoMapper" is null
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$TryMappingToEntity.validate(EngineInfoControllerV1.java:190)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$TryMappingToEntity.validate(EngineInfoControllerV1.java:177)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$CheckEmptyFields.validate(EngineInfoControllerV1.java:168)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$CheckEmptyFields.validate(EngineInfoControllerV1.java:130)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$CheckFillDto.validate(EngineInfoControllerV1.java:121)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator.doValid(EngineInfoControllerV1.java:78)
+	at com.isyb.obd.rest.EngineInfoControllerV1.handleInfoV1(EngineInfoControllerV1.java:37)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
@@ -381,8 +402,8 @@ Caused by: java.lang.NumberFormatException: For input string: "'45.3535032'"
 	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
 	... 54 more
 
-com.isyb.obd.rest.EngineInfoControllerV1Test.handleInfoV1(String, ResultMatcher)[13] -- Time elapsed: 0.008 s <<< ERROR!
-jakarta.servlet.ServletException: Request processing failed: java.lang.NullPointerException: Cannot invoke "com.isyb.obd.models.mapper.EngineInfoMapper.toEntity(Object)" because "this.engineInfoMapper" is null
+com.isyb.obd.rest.EngineInfoControllerV1Test.handleInfoV1(String, ResultMatcher)[13] -- Time elapsed: 0.010 s <<< ERROR!
+jakarta.servlet.ServletException: Request processing failed: java.lang.NullPointerException: Cannot invoke "com.isyb.obd.models.mapper.EngineInfoMapper.toEntity(com.isyb.obd.models.dto.EngineInfoDto)" because "this.this$1.this$0.engineInfoMapper" is null
 	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1022)
 	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
 	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
@@ -392,7 +413,7 @@ jakarta.servlet.ServletException: Request processing failed: java.lang.NullPoint
 	at org.springframework.mock.web.MockFilterChain$ServletFilterProxy.doFilter(MockFilterChain.java:165)
 	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:132)
 	at org.springframework.test.web.servlet.MockMvc.perform(MockMvc.java:201)
-	at com.isyb.obd.rest.EngineInfoControllerV1Test.handleInfoV1(EngineInfoControllerV1Test.java:38)
+	at com.isyb.obd.rest.EngineInfoControllerV1Test.handleInfoV1(EngineInfoControllerV1Test.java:43)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
 	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:183)
 	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
@@ -438,8 +459,94 @@ jakarta.servlet.ServletException: Request processing failed: java.lang.NullPoint
 	at java.base/java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:596)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-Caused by: java.lang.NullPointerException: Cannot invoke "com.isyb.obd.models.mapper.EngineInfoMapper.toEntity(Object)" because "this.engineInfoMapper" is null
-	at com.isyb.obd.rest.EngineInfoControllerV1.handleInfoV1(EngineInfoControllerV1.java:85)
+Caused by: java.lang.NullPointerException: Cannot invoke "com.isyb.obd.models.mapper.EngineInfoMapper.toEntity(com.isyb.obd.models.dto.EngineInfoDto)" because "this.this$1.this$0.engineInfoMapper" is null
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$TryMappingToEntity.validate(EngineInfoControllerV1.java:190)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$TryMappingToEntity.validate(EngineInfoControllerV1.java:177)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$CheckEmptyFields.validate(EngineInfoControllerV1.java:168)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$CheckEmptyFields.validate(EngineInfoControllerV1.java:130)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$CheckFillDto.validate(EngineInfoControllerV1.java:121)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator.doValid(EngineInfoControllerV1.java:78)
+	at com.isyb.obd.rest.EngineInfoControllerV1.handleInfoV1(EngineInfoControllerV1.java:37)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:261)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:189)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:917)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:829)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	... 54 more
+
+com.isyb.obd.rest.EngineInfoControllerV1Test.handleInfoV1(String, ResultMatcher)[14] -- Time elapsed: 0.011 s <<< ERROR!
+jakarta.servlet.ServletException: Request processing failed: java.lang.NullPointerException: Cannot invoke "com.isyb.obd.models.mapper.EngineInfoMapper.toEntity(com.isyb.obd.models.dto.EngineInfoDto)" because "this.this$1.this$0.engineInfoMapper" is null
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1022)
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at org.springframework.test.web.servlet.TestDispatcherServlet.service(TestDispatcherServlet.java:72)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+	at org.springframework.mock.web.MockFilterChain$ServletFilterProxy.doFilter(MockFilterChain.java:165)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:132)
+	at org.springframework.test.web.servlet.MockMvc.perform(MockMvc.java:201)
+	at com.isyb.obd.rest.EngineInfoControllerV1Test.handleInfoV1(EngineInfoControllerV1Test.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:183)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:179)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:183)
+	at java.base/java.util.stream.ReferencePipeline$15$1.accept(ReferencePipeline.java:541)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:183)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.Spliterators$ArraySpliterator.forEachRemaining(Spliterators.java:992)
+	at java.base/java.util.stream.ReferencePipeline$Head.forEach(ReferencePipeline.java:762)
+	at java.base/java.util.stream.ReferencePipeline$7$1.accept(ReferencePipeline.java:276)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.Spliterators$ArraySpliterator.forEachRemaining(Spliterators.java:992)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:150)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:173)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.base/java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:596)
+	at java.base/java.util.stream.ReferencePipeline$7$1.accept(ReferencePipeline.java:276)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1625)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:150)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:173)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.base/java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:596)
+	at java.base/java.util.stream.ReferencePipeline$7$1.accept(ReferencePipeline.java:276)
+	at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1625)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:150)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:173)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.base/java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+Caused by: java.lang.NullPointerException: Cannot invoke "com.isyb.obd.models.mapper.EngineInfoMapper.toEntity(com.isyb.obd.models.dto.EngineInfoDto)" because "this.this$1.this$0.engineInfoMapper" is null
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$TryMappingToEntity.validate(EngineInfoControllerV1.java:190)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$TryMappingToEntity.validate(EngineInfoControllerV1.java:177)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$CheckEmptyFields.validate(EngineInfoControllerV1.java:168)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$CheckEmptyFields.validate(EngineInfoControllerV1.java:130)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator$CheckFillDto.validate(EngineInfoControllerV1.java:121)
+	at com.isyb.obd.rest.EngineInfoControllerV1$EngineInfoValidator.doValid(EngineInfoControllerV1.java:78)
+	at com.isyb.obd.rest.EngineInfoControllerV1.handleInfoV1(EngineInfoControllerV1.java:37)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)

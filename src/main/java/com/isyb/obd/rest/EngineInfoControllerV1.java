@@ -1,5 +1,6 @@
 package com.isyb.obd.rest;
 
+import com.isyb.obd.initialization_components.DatabaseInit;
 import com.isyb.obd.models.dto.EngineInfoDto;
 import com.isyb.obd.models.entities.EngineInfo;
 import com.isyb.obd.models.mapper.EngineInfoMapper;
@@ -10,6 +11,8 @@ import com.isyb.obd.validators.Validator;
 import com.isyb.obd.validators.ValidatorFacade;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,6 +32,7 @@ public class EngineInfoControllerV1 {
     private EngineInfoMapper engineInfoMapper;
     @Autowired
     private EngineInfoRepository engineInfoRepository;
+    private static final Logger log = LogManager.getLogger(DatabaseInit.class);
 
     @PostMapping(INFO_V1)
     public ResponseEntity<String> handleInfoV1(@RequestBody String payload) {
@@ -37,17 +41,13 @@ public class EngineInfoControllerV1 {
         ValidationResult validationResult = engineInfoValidator.doValid(parse);
 
         if (validationResult.isValid()) {
-            engineInfoRepository.save(engineInfoValidator.getEngineInfo());
+//            engineInfoRepository.save(engineInfoValidator.getEngineInfo());
 
-            return ResponseEntity.ok().body("Engine info has been added " + engineInfoValidator.engineInfo.toString());
+            log.info("Engine info has been added for {}, payload {}", engineInfoValidator.engineInfo.toString(), payload);
+            return ResponseEntity.ok().body("Engine info HAS BEEN added " + engineInfoValidator.engineInfo.toString());
         } else {
-            StringBuilder description = new StringBuilder();
-
-            for (ValidationError validationError : validationResult.getErrors()) {
-                description.append(validationError.getIdentifier() + " : " + validationError.getDescription());
-            }
-
-            return ResponseEntity.badRequest().body(description.toString());
+            log.warn("Engine info HAS NOT been added for {}, payload {}: {}", engineInfoValidator.engineInfo.toString(), payload, validationResult.getStringErrors());
+            return ResponseEntity.badRequest().body(validationResult.getStringErrors());
         }
     }
 
@@ -114,6 +114,10 @@ public class EngineInfoControllerV1 {
                             validationResult.add(ValidationError.of("CheckFillDto", e.getMessage()));
                         }
                     }
+//                    На випадок, якщо за неіснуючі ключи необхідно буде відхиляти запрос
+//                    else {
+//                        validationResult.add(ValidationError.of("CheckFillDto", ""));
+//                    }
                 }
 
                 if (validationResult.isValid()) {
@@ -156,11 +160,10 @@ public class EngineInfoControllerV1 {
                     if (Optional.ofNullable(value).isEmpty()) {
                         emptyFields.add(field);
                     }
+                }
 
-                    if (!emptyFields.isEmpty()) {
-                        validationResult.add(ValidationError.of("CheckEmptyFields", emptyFields.toString()));
-                    }
-
+                if (!emptyFields.isEmpty()) {
+                    validationResult.add(ValidationError.of("CheckEmptyFields", emptyFields.toString()));
                 }
 
                 if (validationResult.isValid()) {

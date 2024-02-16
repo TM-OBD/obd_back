@@ -21,10 +21,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * //import org.apache.logging.log4j.LogManager;
- * //import org.apache.logging.log4j.Logger;
- * import org.apache.log4j.LogManager;
- * import org.apache.log4j.Logger;
  * <p>Клас <code>DatabaseInit</code> є компонентом Spring, який реалізує інтерфейс <code>ApplicationRunner</code>. Він запускається при старті додатка і виконує ініціалізацію бази даних.</p>
  * <p>Основні кроки роботи класу:</p>
  * <ol>
