@@ -41,7 +41,7 @@ public class EngineInfoControllerV1 {
         ValidationResult validationResult = engineInfoValidator.doValid(parse);
 
         if (validationResult.isValid()) {
-//            engineInfoRepository.save(engineInfoValidator.getEngineInfo());
+            engineInfoRepository.save(engineInfoValidator.getEngineInfo());
 
             log.info("Engine info has been added for {}, payload {}", engineInfoValidator.engineInfo.toString(), payload);
             return ResponseEntity.ok().body("Engine info HAS BEEN added " + engineInfoValidator.engineInfo.toString());

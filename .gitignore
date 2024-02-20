@@ -32,7 +32,7 @@
 #### VS Code ###
 #.vscode/
 
-.idea
+/.idea
 /target/
 !/target/*.jar
-root.log
+logs
