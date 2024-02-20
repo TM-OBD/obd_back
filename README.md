@@ -1,12 +1,5 @@
 # obd_back
 
-Has been done:
-
-- In DatabaseInit now has additional validation of fields from the database
-- Has been added the flyway
-- Has been set up logging via spring journaling (see application.properties)
-- Now use psql version 11
-
 **How to startup on server:**
 
 1. Make sure that JAVA_HOME environment in your server machine is exists
