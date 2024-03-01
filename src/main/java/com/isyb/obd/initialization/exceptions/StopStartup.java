@@ -1,4 +1,4 @@
-package com.isyb.obd.initialization_components.exceptions;
+package com.isyb.obd.initialization.exceptions;
 
 public class StopStartup extends RuntimeException {
     public StopStartup() {

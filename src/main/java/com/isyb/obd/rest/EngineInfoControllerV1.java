@@ -1,6 +1,5 @@
 package com.isyb.obd.rest;
 
-import com.isyb.obd.initialization_components.DatabaseInit;
 import com.isyb.obd.models.dto.EngineInfoDto;
 import com.isyb.obd.models.entities.EngineInfo;
 import com.isyb.obd.models.mapper.EngineInfoMapper;
@@ -32,7 +31,7 @@ public class EngineInfoControllerV1 {
     private EngineInfoMapper engineInfoMapper;
     @Autowired
     private EngineInfoRepository engineInfoRepository;
-    private static final Logger log = LogManager.getLogger(DatabaseInit.class);
+    private static final Logger log = LogManager.getLogger(EngineInfoControllerV1.class);
 
     @PostMapping(INFO_V1)
     public ResponseEntity<String> handleInfoV1(@RequestBody String payload) {

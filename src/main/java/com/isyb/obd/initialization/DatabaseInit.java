@@ -1,6 +1,6 @@
-package com.isyb.obd.initialization_components;
+package com.isyb.obd.initialization;
 
-import com.isyb.obd.initialization_components.exceptions.StopStartup;
+import com.isyb.obd.initialization.exceptions.StopStartup;
 import com.isyb.obd.models.entities.EngineInfo;
 import com.isyb.obd.models.entities.EngineInfoField;
 import com.isyb.obd.models.repos.EngineInfoFieldRepository;

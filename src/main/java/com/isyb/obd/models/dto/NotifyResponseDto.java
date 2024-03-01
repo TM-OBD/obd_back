@@ -10,19 +10,19 @@ import lombok.Setter;
 @Getter
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "result")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = NotifyResultDto.Done.class, name = "done"),
-        @JsonSubTypes.Type(value = NotifyResultDto.Failed.class, name = "failed")
+        @JsonSubTypes.Type(value = NotifyResponseDto.Done.class, name = "done"),
+        @JsonSubTypes.Type(value = NotifyResponseDto.Failed.class, name = "failed")
 })
-public class NotifyResultDto {
+public class NotifyResponseDto {
     @Setter
     @JsonIgnore
     private String result;
 
-    private NotifyResultDto() {
+    private NotifyResponseDto() {
     }
 
     @Data
-    public static class Done extends NotifyResultDto {
+    public static class Done extends NotifyResponseDto {
         private String id;
 
         public Done(String id) {
@@ -33,7 +33,7 @@ public class NotifyResultDto {
     }
 
     @Data
-    public static class Failed extends NotifyResultDto {
+    public static class Failed extends NotifyResponseDto {
         private String error;
 
         public Failed(String error) {

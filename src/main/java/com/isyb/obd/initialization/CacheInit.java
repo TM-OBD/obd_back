@@ -1,4 +1,4 @@
-package com.isyb.obd.initialization_components;
+package com.isyb.obd.initialization;
 
 import com.isyb.obd.cache.EngineInfoFieldCache;
 import com.isyb.obd.models.entities.EngineInfoField;
