@@ -11,9 +11,9 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 
-@SpringBootApplication
 @EnableScheduling
 @EnableWebFlux
+@SpringBootApplication
 public class ObdApplication {
     private static final Logger log = LogManager.getLogger(ObdApplication.class);
 
@@ -24,3 +24,4 @@ public class ObdApplication {
     }
 
 }
+

@@ -1,14 +1,13 @@
 package com.isyb.obd.models.repos;
 
 import com.isyb.obd.models.entities.EngineInfoField;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.r2dbc.repository.Query;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.Set;
+import reactor.core.publisher.Flux;
 
 @Repository
-public interface EngineInfoFieldRepository extends JpaRepository<EngineInfoField, Long> {
-    @Query(value = "SELECT column_name FROM information_schema.columns WHERE table_name = ?1", nativeQuery = true)
-    Set<String> findAllColumnsByTableName(String tableName);
+public interface EngineInfoFieldRepository extends ReactiveCrudRepository<EngineInfoField, Long> {
+    @Query(value = "SELECT column_name FROM information_schema.columns WHERE table_name = :tableName")
+    Flux<String> findAllColumnsByTableName(String tableName);
 }

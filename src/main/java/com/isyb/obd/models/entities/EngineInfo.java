@@ -1,11 +1,11 @@
 package com.isyb.obd.models.entities;
 
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.sql.Timestamp;
 
-@Entity
 @Table(name = "engine_info")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,7 +14,6 @@ import java.sql.Timestamp;
 @ToString
 public class EngineInfo {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private Timestamp timestamp;
     private double latitude;

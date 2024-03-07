@@ -17,9 +17,6 @@ public class ValidatorCoordinator<T> {
     public List<ValidationResult> validateAll(T object) {
         List<ValidationResult> validationResults = new ArrayList<>();
         for (Validator<T> validator : validators) {
-//            if (!validator.validate(object).isValid()) {
-//                return validator.validate(object);
-//            }
             validationResults.add(validator.validate(object));
         }
 

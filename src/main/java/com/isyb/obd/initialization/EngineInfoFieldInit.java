@@ -5,54 +5,40 @@ import com.isyb.obd.models.entities.EngineInfo;
 import com.isyb.obd.models.entities.EngineInfoField;
 import com.isyb.obd.models.repos.EngineInfoFieldRepository;
 import com.isyb.obd.validators.*;
-import jakarta.persistence.Table;
-import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
+import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * <p>Клас <code>DatabaseInit</code> є компонентом Spring, який реалізує інтерфейс <code>ApplicationRunner</code>. Він запускається при старті додатка і виконує ініціалізацію бази даних.</p>
- * <p>Основні кроки роботи класу:</p>
- * <ol>
- * <li>У методі <code>run</code> створюється список об&#39;єктів <code>EngineInfoField</code>, які представляють поля таблиці бази даних.</li>
- * <li>Створюється екземпляр <code>DatabaseInitValidator</code>, який використовується для валідації створених полів.</li>
- * <li>Виконується валідація полів за допомогою <code>DatabaseInitValidator</code>.</li>
- * <li>Якщо валідація не пройшла успішно, то викидається виняток <code>StopStartup</code>, що призводить до зупинки запуску додатка.</li>
- * <li>Після успішної валідації полів відбувається збереження цих полів у базі даних за допомогою <code>engineInfoFieldRepository</code>.</li>
- * </ol>
- * <p>Клас <code>DatabaseInit</code> також містить вкладений клас <code>DatabaseInitValidator</code>, який виконує валідацію полів бази даних. Він додає валідатори до <code>ValidatorCoordinator</code> і викликає метод <code>validateAll</code>, який повертає результати валідації.</p>
- * <p>У методі <code>validate</code> класу <code>CheckColumnInDatabase</code> перевіряється наявність стовпців у базі даних, порівнюючи їх з колонками, представленими у об&#39;єктах <code>EngineInfoField</code>. Якщо існує різниця у кількості стовпців або деякі стовпці відсутні, додаються відповідні помилки до результату валідації.</p>
- * <p><b>Доповнення:</b></p>
- * <p>Це було зроблено для гнучкості у використанні під час парсингу показників, які приходять на наші ендпоінти (наприклад, у цьому випадку інформація про двигун), якщо раптом в інформативну сутність роботи двигуна додаватимуться додаткові поля. Для валідації використовував відповідний патерн, який опишу в іншому місці. Використовував внутрішні приватні класи, щоб простіше було знаходити пов'язану логіку.</p>
- * <p>Під час додавання нового стовпця в таблиці engine_info необхідно так само додати інформацію про цей стовпець в engine_info_fields. Можливо, у майбутньому варто це автоматизувати.</p>
- */
+
 @Component
 @Order(1)
-public class DatabaseInit implements ApplicationRunner {
+public class EngineInfoFieldInit implements ApplicationRunner {
     @Autowired
     private final EngineInfoFieldRepository engineInfoFieldRepository;
 
-    private static final Logger log = LogManager.getLogger(DatabaseInit.class);
+    private static final Logger log = LogManager.getLogger(EngineInfoFieldInit.class);
 
-    public DatabaseInit(EngineInfoFieldRepository engineInfoFieldRepository) {
+    public EngineInfoFieldInit(EngineInfoFieldRepository engineInfoFieldRepository) {
         this.engineInfoFieldRepository = engineInfoFieldRepository;
     }
 
-    @Transactional
     @Override
     public void run(ApplicationArguments args) throws Exception {
         log.info("Step 1: initialization database: сhecking the presence of columns in table engine_info through table engine_info_fields");
-        List<EngineInfoField> fields = engineInfoFieldRepository.findAll();
+
+        Flux<EngineInfoField> all = engineInfoFieldRepository.findAll();
+        List<EngineInfoField> fields = all.collect(Collectors.toList()).block();
 
         if (fields.isEmpty()) {
             //        Готуємось занести ці дані в базу даних, але спочатку необхідно провалідувати
@@ -81,7 +67,8 @@ public class DatabaseInit implements ApplicationRunner {
         }
 
 //        Якщо все гаразд, то зберігаємо в таблиці філдів необхідно інформацію, яку далі будемо використовувати в парсінгу
-        engineInfoFieldRepository.saveAll(fields);
+        Flux<EngineInfoField> engineInfoFieldFlux = engineInfoFieldRepository.saveAll(fields);
+        List<EngineInfoField> engineInfoFields = engineInfoFieldFlux.collect(Collectors.toList()).block();
     }
 
     //    Клас, в якому валідуємо поетапно необхідні дані та збираємо результати цих валідацій
@@ -116,8 +103,13 @@ public class DatabaseInit implements ApplicationRunner {
                         .map(EngineInfoField::getField_name)
                         .collect(Collectors.toCollection(HashSet::new));
 //                З information_schema.columns за назвою таблиці дістаємо інформацію про те, які зберігає стовпці, та ігноруємо стовпець id, щоб не було різниці в порівнянні
-                Set<String> allColumnsByTableName = engineInfoFieldRepository.findAllColumnsByTableName(name);
+
+                Flux<String> allColumnsByTableNameFlux = engineInfoFieldRepository.findAllColumnsByTableName(name);
+                Set<String> allColumnsByTableName = allColumnsByTableNameFlux
+                        .collect(Collectors.toSet())
+                        .block();
                 allColumnsByTableName.removeIf("id"::equals);
+
 
 //                Швиденько перевіряємо умови, які нас цікавлять: відповідність розміру і відповідність вмісту
                 boolean containsSameElements = columns.size() == allColumnsByTableName.size() && columns.containsAll(allColumnsByTableName);
@@ -151,4 +143,104 @@ public class DatabaseInit implements ApplicationRunner {
             }
         }
     }
+
+    /*@Override
+    public void run(ApplicationArguments args) throws Exception {
+        log.info("Step 1: initialization database: сhecking the presence of columns in table engine_info through table engine_info_fields");
+
+        Flux<EngineInfoField> fields = engineInfoFieldRepository.findAll()
+                .switchIfEmpty(
+                        Flux.just(
+                                new EngineInfoField(1L, "0", "timestamp"),
+                                new EngineInfoField(2L, "a", "latitude"),
+                                new EngineInfoField(3L, "b", "longitude"),
+                                new EngineInfoField(4L, "24", "voltage"),
+                                new EngineInfoField(5L, "82", "temperature")
+                        )
+                );
+
+//        Резко пропали результаты ошибок, хотя ничего не изменил. Периодически то появляются, то исчезают
+        Flux<ValidationResult> validationResultFlux = new DatabaseInitValidator().doValid(fields);
+
+        validationResultFlux.concatWith(Mono.just(new ValidationResult()))
+                .filter(validationResult -> !validationResult.isValid())
+                .subscribe(
+                        result -> log.info("Step 1: Validation was successful"),
+                        error -> {
+                            log.fatal("Step 1: Validation was not passed: {}", error.getMessage());
+                            throw new StopStartup("Validation was not passed: " + error.getMessage());
+                        }
+                );
+
+        fields.flatMap(engineInfoFieldRepository::save).subscribe();
+
+    }
+
+    private class DatabaseInitValidator implements ValidatorFacade<Flux<EngineInfoField>, Flux<ValidationResult>> {
+
+        @Override
+        public Flux<ValidationResult> doValid(Flux<EngineInfoField> validationObject) {
+            log.info("Step 1: Beginning of validation");
+
+            ValidatorCoordinator validatorCoordinator = new ValidatorCoordinator<>();
+            validatorCoordinator.addValidator(new CheckColumnInDatabase());
+
+            List<ValidationResult> validationResults = validatorCoordinator.validateAll(validationObject);
+
+            return Flux.fromIterable(validationResults);
+        }
+    }
+
+    private class CheckColumnInDatabase implements Validator<Flux<EngineInfoField>> {
+        @Override
+        public Mono<ValidationResult> validate(Flux<EngineInfoField> infoField) {
+            log.info("Step 1: Checking the existence of a column in the table and in the list of cooked fields");
+
+            ValidationResult validationResult = new ValidationResult();
+
+            Class<EngineInfo> engineInfoClass = EngineInfo.class;
+            Table annotation = engineInfoClass.getAnnotation(Table.class);
+            String name = annotation.name();
+
+            HashSet<String> columns = new HashSet<>();
+            Mono<HashSet<String>> collectMono = infoField
+                    .map(EngineInfoField::getField_name)
+                    .collect(Collectors.toCollection(HashSet::new));
+            collectMono.subscribe(column -> columns.addAll(column));
+
+            Set<String> allColumnsByTableName = new HashSet<>();
+            Flux<String> allColumnsByTableNameFlux = engineInfoFieldRepository.findAllColumnsByTableName(name);
+
+            allColumnsByTableNameFlux.flatMap(columnSet -> {
+                if (!columnSet.equals("id")) {
+                    // Здесь можно выполнять дополнительные действия с набором столбцов, если это необходимо
+                    allColumnsByTableName.add(columnSet);
+                }
+                return Mono.empty(); // Возвращаем пустой Mono, так как дополнительные действия уже выполнены
+            }).subscribe();
+
+
+            boolean containsSameElements = columns.size() == allColumnsByTableName.size() && columns.containsAll(allColumnsByTableName);
+
+            if (containsSameElements) {
+                log.info("Step 1: The validation was successful. Dimensions match, fields of the engine_info_fields table contain columns of the engine_info table");
+                return Mono.just(validationResult);
+            } else {
+                if (columns.size() != allColumnsByTableName.size()) {
+                    validationResult.add(ValidationError.of("1", "Different number of columns, columns.size() = " + columns.size() + ", allColumnsByTableName.size() = " + allColumnsByTableName.size(), this.getClass()));
+                }
+
+                if (!columns.containsAll(allColumnsByTableName) || columns.size() != allColumnsByTableName.size()) {
+                    Set<String> missingInColumns = new HashSet<>(allColumnsByTableName);
+                    missingInColumns.removeAll(columns);
+                    Set<String> missingInAllColumnsByTableName = new HashSet<>(columns);
+                    missingInAllColumnsByTableName.removeAll(allColumnsByTableName);
+                    validationResult.add(ValidationError.of("1", "Elements not present in columns but present in allColumnsByTableName: " + missingInColumns + "; Elements not present in allColumnsByTableName but present in column: " + missingInAllColumnsByTableName, this.getClass()));
+                }
+            }
+            log.fatal("Step 1: Validation was not passed: {}", validationResult.getStringErrors());
+            return Mono.just(validationResult);
+        }
+
+    }*/
 }
