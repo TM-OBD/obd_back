@@ -3,6 +3,8 @@ package com.isyb.obd.rest;
 
 import com.isyb.obd.models.dto.NotifyDto;
 import com.isyb.obd.models.dto.NotifyResponseDto;
+import com.isyb.obd.models.entities.FunctionResultOfLoginLogoutNotify;
+import com.isyb.obd.models.repos.NotifyRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.sql.Timestamp;
 
@@ -30,12 +33,15 @@ public class NotifyController {
     @Autowired
     private Validator validator;
 
+    @Autowired
+    private NotifyRepository notifyRepository;
+
     @GetMapping(NOTIFY)
     public Mono<ResponseEntity<? extends NotifyResponseDto>> notifyHandle(
             @PathVariable String deviceId,
             @RequestParam("EV") String eventId,
             @RequestParam("TS") String timestamp,
-            @RequestParam("VIN") String vehicleVIN
+            @RequestParam(value = "VIN", required = false) String vehicleVIN
     ) {
 
         return Mono
@@ -55,7 +61,7 @@ public class NotifyController {
 
                             log.info("[deviceId: {}, EV: {}, TS: {}, VIN: {}; NotifyStatus: {}] TS has been transformed into long", deviceId, eventId, timestamp, vehicleVIN, dto.getNotifyStatus().toString());
                         } catch (NumberFormatException numberFormatException) {
-                            dto.setNotifyStatus(NotifyDto.NotifyStatus.PARSER_FAILS("Invalid timestamp"));
+                            dto.setNotifyStatus(PARSER_FAILS("Invalid timestamp"));
 
                             log.warn("[deviceId: {}, EV: {}, TS: {}, VIN: {}; NotifyStatus: {}] TS HAS NOT transformed into long", deviceId, eventId, timestamp, vehicleVIN, dto.getNotifyStatus().toString());
                         }
@@ -88,25 +94,56 @@ public class NotifyController {
 
                     return dto;
                 })
+                .publishOn(Schedulers.boundedElastic())
                 .map(dto -> {
                     if (dto.getNotifyStatus().equals(VALIDATE_SUCCESSFULLY)) {
-//                        TODO: перед сохранением в БД необходимо выполнить проверку: одобряем ли запрос на логин или нет. Возможно, сделаю это через процедуру
 
-                        dto.setNotifyStatus(SAVED);
+                        dto.setNotifyStatus(SAVE_PROGRESSING);
+
+                        switch (eventId) {
+                            case "1":
+                                Mono<FunctionResultOfLoginLogoutNotify> functionOnLoginDeviceResultMono = notifyRepository.onLoginDevice(dto.getDeviceId());
+                                functionOnLoginDeviceResultMono.subscribe(result -> log.info("[deviceId: {}, EV: {}, TS: {}, VIN: {}; NotifyStatus: {}] (async calling r2dbc function) Saved result: {}, saved result message: {}, progress id: {}", deviceId, eventId, timestamp, vehicleVIN, dto.getNotifyStatus().toString(), result.getSavedresult(), result.getSavedresultmessage(), result.getProgressid()));
+
+                                break;
+                        }
+
                         return dto;
                     }
 
                     return dto;
                 })
                 .flatMap(dto -> {
-                    if (dto.getNotifyStatus().equals(SAVED)) {
-                        NotifyResponseDto.Done done = new NotifyResponseDto.Done(vehicleVIN);
+                    if (dto.getNotifyStatus().equals(SAVE_PROGRESSING)) {
 
-                        log.info("[deviceId: {}, EV: {}, TS: {}, VIN: {}; NotifyStatus: {}] Response has been sent. NotifyResponseDto: {}", deviceId, eventId, timestamp, vehicleVIN, dto.getNotifyStatus().toString(), done.toString());
+                        return notifyRepository.loginDeviceInProgress(deviceId)
+                                .map(result -> {
 
-                        return Mono.fromCallable(() -> ResponseEntity.badRequest().body(done));
+                                    dto.setNotifyStatus(NotifyDto.NotifyStatus.valueOf(result.getSavedresult()));
+
+                                    if (dto.getNotifyStatus().equals(SAVED_SUCCESSFULLY)) {
+                                        NotifyResponseDto.Done done = new NotifyResponseDto.Done(deviceId);
+
+                                        log.info("[deviceId: {}, EV: {}, TS: {}, VIN: {}; NotifyStatus: {}] Response has been sent. NotifyResponseDto: {}", deviceId, eventId, timestamp, vehicleVIN, dto.getNotifyStatus().toString(), done.toString());
+
+                                        return ResponseEntity.ok().body(done);
+                                    } else if (dto.getNotifyStatus().equals(SAVED_FAILS)) {
+                                        dto.setNotifyStatus(SAVED_FAILS(result.getSavedresultmessage()));
+
+                                        NotifyResponseDto.Failed failed = new NotifyResponseDto.Failed(dto.getNotifyStatus().getErrorMessage());
+
+                                        log.warn("[deviceId: {}, EV: {}, TS: {}, VIN: {}; NotifyStatus: {}] Response has been sent. NotifyResponseDto: {}", deviceId, eventId, timestamp, vehicleVIN, dto.getNotifyStatus().toString(), failed.toString());
+
+                                        return ResponseEntity.badRequest().body(failed);
+                                    }
+
+                                    NotifyResponseDto.Failed failed = new NotifyResponseDto.Failed(dto.getNotifyStatus().getErrorMessage());
+
+                                    log.warn("[deviceId: {}, EV: {}, TS: {}, VIN: {}; NotifyStatus: {}] Response has been sent. NotifyResponseDto: {}", deviceId, eventId, timestamp, vehicleVIN, dto.getNotifyStatus().toString(), failed.toString());
+
+                                    return ResponseEntity.badRequest().body(failed);
+                                });
                     }
-
                     NotifyResponseDto.Failed failed = new NotifyResponseDto.Failed(dto.getNotifyStatus().getErrorMessage());
 
                     log.warn("[deviceId: {}, EV: {}, TS: {}, VIN: {}; NotifyStatus: {}] Response has been sent. NotifyResponseDto: {}", deviceId, eventId, timestamp, vehicleVIN, dto.getNotifyStatus().toString(), failed.toString());

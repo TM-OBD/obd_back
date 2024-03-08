@@ -1,9 +1,4 @@
 # obd_back
-
-**Changes**
-- Reimplemented the logic of initialization from synchronous stack to async stack
-- Solved problems with application running and validation of engine_info_fields
-
 **How to startup on server:**
 
 1. Make sure that JAVA_HOME environment in your server machine is exists

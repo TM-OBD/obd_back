@@ -20,4 +20,6 @@ public class BeanConfiguration {
                 .version(HttpClient.Version.HTTP_2)
                 .build();
     }
+
+
 }

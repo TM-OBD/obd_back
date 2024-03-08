@@ -42,15 +42,17 @@ public class EngineInfoFieldInit implements ApplicationRunner {
 
         if (fields.isEmpty()) {
             //        Готуємось занести ці дані в базу даних, але спочатку необхідно провалідувати
-            fields.addAll(
-                    List.of(
-                            new EngineInfoField(1L, "0", "timestamp"),
-                            new EngineInfoField(2L, "a", "latitude"),
-                            new EngineInfoField(3L, "b", "longitude"),
-                            new EngineInfoField(4L, "24", "voltage"),
-                            new EngineInfoField(5L, "82", "temperature")
-                    )
-            );
+//            fields.addAll(
+//                    List.of(
+//                            new EngineInfoField(1L, "0", "timestamp"),
+//                            new EngineInfoField(2L, "a", "latitude"),
+//                            new EngineInfoField(3L, "b", "longitude"),
+//                            new EngineInfoField(4L, "24", "voltage"),
+//                            new EngineInfoField(5L, "82", "temperature")
+//                    )
+//            );
+
+            throw new StopStartup("Fields can not be empty!");
 
         }
 //        Викликаємо метод для валідації
@@ -66,9 +68,9 @@ public class EngineInfoFieldInit implements ApplicationRunner {
             }
         }
 
-//        Якщо все гаразд, то зберігаємо в таблиці філдів необхідно інформацію, яку далі будемо використовувати в парсінгу
-        Flux<EngineInfoField> engineInfoFieldFlux = engineInfoFieldRepository.saveAll(fields);
-        List<EngineInfoField> engineInfoFields = engineInfoFieldFlux.collect(Collectors.toList()).block();
+////        Якщо все гаразд, то зберігаємо в таблиці філдів необхідно інформацію, яку далі будемо використовувати в парсінгу
+//        Flux<EngineInfoField> engineInfoFieldFlux = engineInfoFieldRepository.saveAll(fields);
+//        List<EngineInfoField> engineInfoFields = engineInfoFieldFlux.collect(Collectors.toList()).block();
     }
 
     //    Клас, в якому валідуємо поетапно необхідні дані та збираємо результати цих валідацій

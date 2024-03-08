@@ -2,6 +2,7 @@ package com.isyb.obd.models.dto;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -18,11 +19,11 @@ public class NotifyDto {
     private String deviceId;
     @NotNull
     @Size(min = 1, max = 1)
+    @Pattern(regexp = "[01]", message = "eventId must contain only 0 or 1")
     private String eventId;
     @NotNull
     @PastOrPresent
     private Timestamp timestamp;
-    @NotNull
     @Size(min = 1, max = 255)
     private String vehicleVIN;
     @Transient
@@ -45,7 +46,7 @@ public class NotifyDto {
 //    }
 
     public enum NotifyStatus {
-        CREATED, PARSER_SUCCESSFULLY, PARSER_FAILS, VALIDATE_SUCCESSFULLY, VALIDATE_FAILS, SAVED;
+        CREATED, PARSER_SUCCESSFULLY, PARSER_FAILS, VALIDATE_SUCCESSFULLY, VALIDATE_FAILS, SAVE_PROGRESSING, SAVED_FAILS, SAVED_SUCCESSFULLY;
 
         private String errorMessage;
 
@@ -69,6 +70,12 @@ public class NotifyDto {
 
         public static NotifyStatus PARSER_FAILS(String errorMessage) {
             NotifyStatus status = PARSER_FAILS;
+            status.errorMessage = errorMessage;
+            return status;
+        }
+
+        public static NotifyStatus SAVED_FAILS(String errorMessage) {
+            NotifyStatus status = SAVED_FAILS;
             status.errorMessage = errorMessage;
             return status;
         }
