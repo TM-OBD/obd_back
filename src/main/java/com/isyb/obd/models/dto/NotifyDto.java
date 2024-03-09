@@ -20,7 +20,7 @@ public class NotifyDto {
     @NotNull
     @Size(min = 1, max = 1)
     @Pattern(regexp = "[01]", message = "eventId must contain only 0 or 1")
-    private String eventId;
+    private String event;
     @NotNull
     @PastOrPresent
     private Timestamp timestamp;
@@ -29,9 +29,9 @@ public class NotifyDto {
     @Transient
     private NotifyStatus notifyStatus;
 
-    public NotifyDto(@NotNull @Size(min = 1, max = 255) String deviceId, @NotNull @Size(min = 1, max = 1) String eventId, @NotNull @PastOrPresent Timestamp timestamp, @NotNull @Size(min = 1, max = 255) String vehicleVIN) {
+    public NotifyDto(@NotNull @Size(min = 1, max = 255) String deviceId, @NotNull @Size(min = 1, max = 1) String event, @NotNull @PastOrPresent Timestamp timestamp, @NotNull @Size(min = 1, max = 255) String vehicleVIN) {
         this.deviceId = deviceId;
-        this.eventId = eventId;
+        this.event = event;
         this.timestamp = timestamp;
         this.vehicleVIN = vehicleVIN;
         this.notifyStatus = NotifyStatus.CREATED;

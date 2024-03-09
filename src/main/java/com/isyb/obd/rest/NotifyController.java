@@ -74,7 +74,7 @@ public class NotifyController {
                     if (dto.getNotifyStatus().equals(PARSER_SUCCESSFULLY)) {
 
                         dto.setDeviceId(deviceId);
-                        dto.setEventId(eventId);
+                        dto.setEvent(eventId);
                         dto.setTimestamp(new Timestamp(Long.valueOf(timestamp)));
                         dto.setVehicleVIN(vehicleVIN);
 
@@ -100,12 +100,19 @@ public class NotifyController {
 
                         dto.setNotifyStatus(SAVE_PROGRESSING);
 
-                        switch (eventId) {
-                            case "1":
+                        switch (dto.getEvent()) {
+                            case "1" -> {
                                 Mono<FunctionResultOfLoginLogoutNotify> functionOnLoginDeviceResultMono = notifyRepository.onLoginDevice(dto.getDeviceId());
-                                functionOnLoginDeviceResultMono.subscribe(result -> log.info("[deviceId: {}, EV: {}, TS: {}, VIN: {}; NotifyStatus: {}] (async calling r2dbc function) Saved result: {}, saved result message: {}, progress id: {}", deviceId, eventId, timestamp, vehicleVIN, dto.getNotifyStatus().toString(), result.getSavedresult(), result.getSavedresultmessage(), result.getProgressid()));
-
-                                break;
+//                                functionOnLoginDeviceResultMono.subscribe(result -> log.info("[deviceId: {}, EV: {}, TS: {}, VIN: {}; NotifyStatus: {}] (async calling r2dbc function) Saved result: {}, saved result message: {}, progress id: {}", deviceId, eventId, timestamp, vehicleVIN, dto.getNotifyStatus().toString(), result.getSavedresult(), result.getSavedresultmessage(), result.getProgressid()));
+                                FunctionResultOfLoginLogoutNotify block = functionOnLoginDeviceResultMono.block();
+                                log.info("[deviceId: {}, EV: {}, TS: {}, VIN: {}; NotifyStatus: {}] (blocking call r2dbc function) Saved result: {}, saved result message: {}, progress id: {}", deviceId, eventId, timestamp, vehicleVIN, dto.getNotifyStatus().toString(), block.getSavedresult(), block.getSavedresultmessage(), block.getProgressid());
+                            }
+                            case "0" -> {
+                                Mono<FunctionResultOfLoginLogoutNotify> functionOnLoginDeviceResultMono = notifyRepository.onLogoutDevice(dto.getDeviceId());
+//                                functionOnLoginDeviceResultMono.subscribe(result -> log.info("[deviceId: {}, EV: {}, TS: {}, VIN: {}; NotifyStatus: {}] (async calling r2dbc function) Saved result: {}, saved result message: {}, progress id: {}", deviceId, eventId, timestamp, vehicleVIN, dto.getNotifyStatus().toString(), result.getSavedresult(), result.getSavedresultmessage(), result.getProgressid()));
+                                FunctionResultOfLoginLogoutNotify block = functionOnLoginDeviceResultMono.block();
+                                log.info("[deviceId: {}, EV: {}, TS: {}, VIN: {}; NotifyStatus: {}] (blocking call r2dbc function) Saved result: {}, saved result message: {}, progress id: {}", deviceId, eventId, timestamp, vehicleVIN, dto.getNotifyStatus().toString(), block.getSavedresult(), block.getSavedresultmessage(), block.getProgressid());
+                            }
                         }
 
                         return dto;
@@ -116,10 +123,16 @@ public class NotifyController {
                 .flatMap(dto -> {
                     if (dto.getNotifyStatus().equals(SAVE_PROGRESSING)) {
 
-                        return notifyRepository.loginDeviceInProgress(deviceId)
+                        return notifyRepository.pollDeviceInProgress(deviceId)
                                 .map(result -> {
 
-                                    dto.setNotifyStatus(NotifyDto.NotifyStatus.valueOf(result.getSavedresult()));
+//                                    поскольку по умолчанию уровень изоляции транзакций READ COMMITED, то не исключаем вероятность того, что данные не будут изменены или удалены другими транзакциями до конца текущей транзакции
+//                                    при необходимости поставлю уровень SERIALIZABLE и проверю, будет ли ещё эта ошибка падать. пока это не критично
+                                    try {
+                                        dto.setNotifyStatus(NotifyDto.NotifyStatus.valueOf(result.getSavedresult()));
+                                    } catch (NullPointerException e) {
+                                        log.error("[deviceId: {}, EV: {}, TS: {}, VIN: {}; NotifyStatus: {}] {}", deviceId, eventId, timestamp, vehicleVIN, dto.getNotifyStatus().toString(), result.toString());
+                                    }
 
                                     if (dto.getNotifyStatus().equals(SAVED_SUCCESSFULLY)) {
                                         NotifyResponseDto.Done done = new NotifyResponseDto.Done(deviceId);
