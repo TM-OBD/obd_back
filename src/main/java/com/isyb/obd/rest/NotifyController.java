@@ -2,7 +2,7 @@ package com.isyb.obd.rest;
 
 
 import com.isyb.obd.models.dto.NotifyDto;
-import com.isyb.obd.models.dto.NotifyResponseDto;
+import com.isyb.obd.models.dto.ResponseForObdDto;
 import com.isyb.obd.models.entities.FunctionResultOfLoginLogoutNotify;
 import com.isyb.obd.models.repos.NotifyRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class NotifyController {
     private NotifyRepository notifyRepository;
 
     @GetMapping(NOTIFY)
-    public Mono<ResponseEntity<? extends NotifyResponseDto>> notifyHandle(
+    public Mono<ResponseEntity<? extends ResponseForObdDto>> notifyHandle(
             @PathVariable String deviceId,
             @RequestParam("EV") String eventId,
             @RequestParam("TS") String timestamp,
@@ -135,7 +135,7 @@ public class NotifyController {
                                     }
 
                                     if (dto.getNotifyStatus().equals(SAVED_SUCCESSFULLY)) {
-                                        NotifyResponseDto.Done done = new NotifyResponseDto.Done(deviceId);
+                                        ResponseForObdDto.Done done = new ResponseForObdDto.Done(deviceId);
 
                                         log.info("[deviceId: {}, EV: {}, TS: {}, VIN: {}; NotifyStatus: {}] Response has been sent. NotifyResponseDto: {}", deviceId, eventId, timestamp, vehicleVIN, dto.getNotifyStatus().toString(), done.toString());
 
@@ -143,21 +143,21 @@ public class NotifyController {
                                     } else if (dto.getNotifyStatus().equals(SAVED_FAILS)) {
                                         dto.setNotifyStatus(SAVED_FAILS(result.getSavedresultmessage()));
 
-                                        NotifyResponseDto.Failed failed = new NotifyResponseDto.Failed(dto.getNotifyStatus().getErrorMessage());
+                                        ResponseForObdDto.Failed failed = new ResponseForObdDto.Failed(dto.getNotifyStatus().getErrorMessage());
 
                                         log.warn("[deviceId: {}, EV: {}, TS: {}, VIN: {}; NotifyStatus: {}] Response has been sent. NotifyResponseDto: {}", deviceId, eventId, timestamp, vehicleVIN, dto.getNotifyStatus().toString(), failed.toString());
 
                                         return ResponseEntity.badRequest().body(failed);
                                     }
 
-                                    NotifyResponseDto.Failed failed = new NotifyResponseDto.Failed(dto.getNotifyStatus().getErrorMessage());
+                                    ResponseForObdDto.Failed failed = new ResponseForObdDto.Failed(dto.getNotifyStatus().getErrorMessage());
 
                                     log.warn("[deviceId: {}, EV: {}, TS: {}, VIN: {}; NotifyStatus: {}] Response has been sent. NotifyResponseDto: {}", deviceId, eventId, timestamp, vehicleVIN, dto.getNotifyStatus().toString(), failed.toString());
 
                                     return ResponseEntity.badRequest().body(failed);
                                 });
                     }
-                    NotifyResponseDto.Failed failed = new NotifyResponseDto.Failed(dto.getNotifyStatus().getErrorMessage());
+                    ResponseForObdDto.Failed failed = new ResponseForObdDto.Failed(dto.getNotifyStatus().getErrorMessage());
 
                     log.warn("[deviceId: {}, EV: {}, TS: {}, VIN: {}; NotifyStatus: {}] Response has been sent. NotifyResponseDto: {}", deviceId, eventId, timestamp, vehicleVIN, dto.getNotifyStatus().toString(), failed.toString());
 

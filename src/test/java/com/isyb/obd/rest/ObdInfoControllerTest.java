@@ -1,7 +1,6 @@
 package com.isyb.obd.rest;
 
-import com.isyb.obd.ObdApplication;
-import com.isyb.obd.models.repos.EngineInfoRepository;
+import com.isyb.obd.models.repos.ObdInfoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -9,7 +8,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.http.MediaType;
@@ -27,20 +25,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = ApplicationRunner.class, initializers = ConfigDataApplicationContextInitializer.class)
-class EngineInfoControllerV1Test {
+class ObdInfoControllerTest {
 
     @Mock
-    private EngineInfoRepository engineInfoRepository;
+    private ObdInfoRepository obdInfoRepository;
 
     private MockMvc mockMvc;
     //    private ObjectMapper objectMapper;
     @InjectMocks
-    private EngineInfoControllerV1 engineInfoControllerV1;
+    private ObdInfoController obdInfoController;
 
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(engineInfoControllerV1).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(obdInfoController).build();
 //        this.objectMapper = new ObjectMapper();
     }
 

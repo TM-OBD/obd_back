@@ -3,7 +3,7 @@ package com.isyb.obd.models.dto;
 import lombok.Data;
 
 @Data
-public class EngineInfoDto {
+public class ObdInfoDto {
     private String timestamp;
     private String latitude;
     private String longitude;

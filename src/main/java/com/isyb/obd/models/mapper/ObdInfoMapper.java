@@ -1,7 +1,7 @@
 package com.isyb.obd.models.mapper;
 
-import com.isyb.obd.models.dto.EngineInfoDto;
-import com.isyb.obd.models.entities.EngineInfo;
+import com.isyb.obd.models.dto.ObdInfoDto;
+import com.isyb.obd.models.entities.ObdInfo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -11,13 +11,13 @@ import java.sql.Timestamp;
 
 @Component
 @Mapper(componentModel = "spring", imports = {Timestamp.class})
-public interface EngineInfoMapper {
+public interface ObdInfoMapper {
 
 //    EngineInfoDto toDto(EngineInfo entity);
 
 
     @Mapping(source = "timestamp", target = "timestamp", qualifiedByName = "stringToTimestamp")
-    EngineInfo toEntity(EngineInfoDto dto) throws NumberFormatException;
+    ObdInfo toEntity(ObdInfoDto dto) throws NumberFormatException;
 
     @Named("stringToTimestamp")
     default Timestamp toTimestamp(String timestamp) {

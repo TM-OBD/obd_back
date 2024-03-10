@@ -1,20 +1,21 @@
-create table engine_info
+create table obd_info
 (
-    id          bigserial not null primary key,
-    latitude    float(53) not null,
-    longitude   float(53) not null,
-    temperature float(53) not null,
-    voltage     float(53) not null,
+    id          bigserial    not null primary key,
+    device_id   varchar(255) not null,
+    latitude    float(53),
+    longitude   float(53),
+    temperature float(53),
+    voltage     float(53),
     timestamp   timestamp(6)
 );
-create table engine_info_fields
+create table obd_info_fields
 (
     id         bigserial    not null primary key,
     field_name varchar(255) not null,
     symbol     varchar(255) not null
 );
 
-INSERT INTO engine_info_fields (symbol, field_name)
+INSERT INTO obd_info_fields (symbol, field_name)
 VALUES ('0', 'timestamp'),
        ('a', 'latitude'),
        ('b', 'longitude'),

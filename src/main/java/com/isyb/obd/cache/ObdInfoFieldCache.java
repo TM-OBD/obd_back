@@ -8,8 +8,8 @@ import java.util.Map;
 
 @Component
 @Scope(scopeName = "singleton")
-public class EngineInfoFieldCache {
+public class ObdInfoFieldCache {
     //    public static final ConcurrentHashMap<String, String> _ENGINE_INFO_FIELDS = new ConcurrentHashMap<>();
 //    Записываем в словарь только при старте приложения, в дальнейшем только читаем, поэтому нет необходимости в блокировках
-    public static final Map<String, String> _ENGINE_INFO_FIELDS_CACHE = new HashMap<>();
+    public static final Map<String, String> _OBD_INFO_FIELDS_CACHE = new HashMap<>();
 }

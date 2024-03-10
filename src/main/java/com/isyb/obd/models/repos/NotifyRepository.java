@@ -1,6 +1,6 @@
 package com.isyb.obd.models.repos;
 
-import com.isyb.obd.models.entities.EngineInfo;
+import com.isyb.obd.models.entities.ObdInfo;
 import com.isyb.obd.models.entities.FunctionResultOfLoginLogoutNotify;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
@@ -9,7 +9,7 @@ import reactor.core.publisher.Mono;
 
 
 @Repository
-public interface NotifyRepository extends ReactiveCrudRepository<EngineInfo, Long> {
+public interface NotifyRepository extends ReactiveCrudRepository<ObdInfo, Long> {
     @Query(value = "SELECT * FROM on_login_device(:deviceId)")
     Mono<FunctionResultOfLoginLogoutNotify> onLoginDevice(String deviceId);
 
