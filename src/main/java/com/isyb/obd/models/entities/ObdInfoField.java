@@ -15,6 +15,6 @@ import org.springframework.data.relational.core.mapping.Table;
 public class ObdInfoField {
     @Id
     public long id;
-    public String symbol;
+    public String pid;
     public String field_name;
 }

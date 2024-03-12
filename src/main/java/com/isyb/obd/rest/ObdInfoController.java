@@ -4,7 +4,7 @@ import com.isyb.obd.models.dto.ObdInfoDto;
 import com.isyb.obd.models.dto.ObdInfoFlowDto;
 import com.isyb.obd.models.dto.ResponseForObdDto;
 import com.isyb.obd.models.entities.ObdInfo;
-import com.isyb.obd.models.mapper.ObdInfoMapper;
+import com.isyb.obd.models.mapper.ObdInfoAdapter;
 import com.isyb.obd.models.repos.ObdInfoRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -32,9 +32,9 @@ import static com.isyb.obd.util.Sources.INFO_V1;
 public class ObdInfoController {
     private static final Logger log = LogManager.getLogger(ObdInfoController.class);
     @Autowired
-    private ObdInfoMapper obdInfoMapper;
-    @Autowired
     private ObdInfoRepository infoRepository;
+    @Autowired
+    private ObdInfoAdapter obdInfoAdapter;
 
     @PostMapping(INFO_V1)
     public Mono<ResponseEntity<? extends ResponseForObdDto>> handlePost(@PathVariable String deviceId, @RequestBody String payload) {
@@ -45,17 +45,34 @@ public class ObdInfoController {
                     return payload;
                 })
                 .map(input -> {
-                    Map<String, String> result = new HashMap<>();
+
+                    Map<String, String> tempMap = new HashMap<>();
                     String[] split = input.split(",");
                     for (String pair : split) {
                         String[] keyValue = pair.split(":");
-                        if (keyValue.length == 2 && !result.containsKey(keyValue[0])) {
-                            result.put(keyValue[0], keyValue[1]);
+                        if (keyValue.length == 2 && !tempMap.containsKey(keyValue[0])) {
+                            tempMap.put(keyValue[0], keyValue[1]);
                         }
                     }
 
-                    log.info("[deviceId: {}; payload {}; ObdInfoStatus: -]: Payload has been transformed to Map<String, String> successfully: {}", deviceId, payload, result.toString());
-                    return result;
+                    Map<String, String> output = new HashMap<>();
+
+                    for (Map.Entry<String, String> entry : tempMap.entrySet()) {
+                        String key = entry.getKey();
+                        String value = entry.getValue();
+
+                        if (value.matches("-?\\d+;-?\\d+;-?\\d+")) {
+                            String[] split1 = value.split(";");
+                            output.put(key + "_x", split1[0]);
+                            output.put(key + "_y", split1[1]);
+                            output.put(key + "_z", split1[2]);
+                        } else {
+                            output.put(key, value);
+                        }
+                    }
+
+                    log.info("[deviceId: {}; payload {}; ObdInfoStatus: -]: Payload has been transformed to Map<String, String> successfully: {}", deviceId, payload, output.toString());
+                    return output;
                 })
                 .map(input -> {
 
@@ -63,6 +80,8 @@ public class ObdInfoController {
                     ObdInfoFlowDto obdInfoFlowDto = new ObdInfoFlowDto();
 
                     Class<? extends ObdInfoDto> aClass = obdInfoDto.getClass();
+
+                    StringBuilder fieldsThatNotExists = new StringBuilder();
 
                     for (Map.Entry<String, String> entry : input.entrySet()) {
                         Optional<String> s = Optional.ofNullable(_OBD_INFO_FIELDS_CACHE.get(entry.getKey()));
@@ -99,11 +118,15 @@ public class ObdInfoController {
                             }
 
                         } else {
-                            obdInfoFlowDto.setObdInfoStatus(FILLED_FAILS("This field does not exist"));
-
-                            log.warn("[deviceId: {}; payload {}; ObdInfoStatus: {}]: {}", deviceId, payload, obdInfoFlowDto.getObdInfoStatus(), obdInfoFlowDto.getObdInfoStatus().getErrorMessage());
-                            return obdInfoFlowDto;
+                            fieldsThatNotExists.append(entry.getKey() + " ");
                         }
+                    }
+
+                    if (!fieldsThatNotExists.isEmpty()) {
+                        obdInfoFlowDto.setObdInfoStatus(FILLED_FAILS("This field does not exist: " + fieldsThatNotExists.toString()));
+
+                        log.warn("[deviceId: {}; payload {}; ObdInfoStatus: {}]: {}", deviceId, payload, obdInfoFlowDto.getObdInfoStatus(), obdInfoFlowDto.getObdInfoStatus().getErrorMessage());
+                        return obdInfoFlowDto;
                     }
 
                     obdInfoFlowDto.setObdInfoDto(obdInfoDto);
@@ -118,7 +141,7 @@ public class ObdInfoController {
                         ObdInfoDto obdInfoDto = obdFlow.getObdInfoDto();
 
                         try {
-                            ObdInfo entity = obdInfoMapper.toEntity(obdInfoDto);
+                            ObdInfo entity = obdInfoAdapter.toEntity(obdInfoDto);
                             entity.setDevice_id(deviceId);
                             obdFlow.setObdInfo(entity);
                         } catch (NumberFormatException e) {

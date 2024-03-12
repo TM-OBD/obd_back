@@ -21,6 +21,6 @@ public class CacheInit implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         Flux<ObdInfoField> all = obdInfoFieldRepository.findAll();
-        all.subscribe(field -> _OBD_INFO_FIELDS_CACHE.put(field.getSymbol(), field.getField_name()));
+        all.subscribe(field -> _OBD_INFO_FIELDS_CACHE.put(field.getPid(), field.getField_name()));
     }
 }
