@@ -10,7 +10,7 @@ public class ObdInfoFlowDto {
     private ObdInfo obdInfo;
 
     public enum ObdInfoStatus {
-        PARSED_SUCCESSFULLY, PARSED_FAILS, FILLED_SUCCESSFULLY, FILLED_FAILS, MAPPED_SUCCESSFULLY, MAPPED_FAILS, SAVED;
+        PARSED_SUCCESSFULLY, PARSED_FAILS, FILTER_FLAG_SUCCESSFULLY, FILTER_FLAG_FAILS, FILLED_SUCCESSFULLY, FILLED_FAILS, MAPPED_SUCCESSFULLY, MAPPED_FAILS, SAVED;
 
         private String errorMessage;
 
@@ -32,6 +32,12 @@ public class ObdInfoFlowDto {
 
         public static ObdInfoStatus MAPPED_FAILS(String errorMessage) {
             ObdInfoStatus status = MAPPED_FAILS;
+            status.errorMessage = errorMessage;
+            return status;
+        }
+
+        public static ObdInfoStatus FILTER_FLAG_FAILS(String errorMessage) {
+            ObdInfoStatus status = FILTER_FLAG_FAILS;
             status.errorMessage = errorMessage;
             return status;
         }

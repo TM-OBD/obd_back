@@ -3,8 +3,10 @@ package com.isyb.obd.rest;
 import com.isyb.obd.models.dto.ObdInfoDto;
 import com.isyb.obd.models.dto.ObdInfoFlowDto;
 import com.isyb.obd.models.dto.ResponseForObdDto;
+import com.isyb.obd.models.entities.Device;
 import com.isyb.obd.models.entities.ObdInfo;
 import com.isyb.obd.models.mapper.ObdInfoAdapter;
+import com.isyb.obd.models.repos.DeviceRepository;
 import com.isyb.obd.models.repos.ObdInfoRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -35,6 +37,8 @@ public class ObdInfoController {
     private ObdInfoRepository infoRepository;
     @Autowired
     private ObdInfoAdapter obdInfoAdapter;
+    @Autowired
+    private DeviceRepository deviceRepository;
 
     @PostMapping(INFO_V1)
     public Mono<ResponseEntity<? extends ResponseForObdDto>> handlePost(@PathVariable String deviceId, @RequestBody String payload) {
@@ -135,9 +139,43 @@ public class ObdInfoController {
                     log.info("[deviceId: {}; payload {}; ObdInfoStatus: {}]: ObdInfoDto has been filled successfully: {}", deviceId, payload, obdInfoFlowDto.getObdInfoStatus(), obdInfoFlowDto.getObdInfoDto().toString());
                     return obdInfoFlowDto;
                 })
+                .publishOn(Schedulers.boundedElastic())
                 .map(obdFlow -> {
 
                     if (obdFlow.getObdInfoStatus().equals(FILLED_SUCCESSFULLY)) {
+                        Optional<Device> deviceOptional = deviceRepository.findByDeviceId(deviceId).blockOptional();
+
+                        if (deviceOptional.isPresent()) {
+                            Device device = deviceOptional.get();
+
+                            if (device.getFlag() != null) {
+                                if (device.getFlag() == 0) {
+                                    obdFlow.setObdInfoStatus(FILTER_FLAG_FAILS("Flag is 0 (logout)"));
+                                } else if (device.getFlag() == 1) {
+                                    obdFlow.setObdInfoStatus(FILTER_FLAG_SUCCESSFULLY);
+                                } else {
+                                    obdFlow.setObdInfoStatus(FILTER_FLAG_FAILS("That flag does not exist: " + device.getFlag().toString()));
+                                }
+                            } else {
+                                obdFlow.setObdInfoStatus(FILTER_FLAG_FAILS("Flag is null"));
+                            }
+
+                        } else {
+                            obdFlow.setObdInfoStatus(FILTER_FLAG_FAILS("That deviceId is not exists"));
+                        }
+                    }
+
+                    if (obdFlow.getObdInfoStatus().equals(FILTER_FLAG_FAILS)) {
+                        log.warn("[deviceId: {}; payload {}; ObdInfoStatus: {}] {}", deviceId, payload, obdFlow.getObdInfoStatus(), obdFlow.getObdInfoStatus().getErrorMessage());
+                    } else if (obdFlow.getObdInfoStatus().equals(FILTER_FLAG_SUCCESSFULLY)) {
+                        log.info("[deviceId: {}; payload {}; ObdInfoStatus: {}] Device authorized successfully (flag value 1)", deviceId, payload, obdFlow.getObdInfoStatus());
+                    }
+
+                    return obdFlow;
+                })
+                .map(obdFlow -> {
+
+                    if (obdFlow.getObdInfoStatus().equals(FILTER_FLAG_SUCCESSFULLY)) {
                         ObdInfoDto obdInfoDto = obdFlow.getObdInfoDto();
 
                         try {
@@ -158,7 +196,6 @@ public class ObdInfoController {
                     }
                     return obdFlow;
                 })
-                .publishOn(Schedulers.boundedElastic())
                 .map(obdFlow -> {
 
                     if (obdFlow.getObdInfoStatus().equals(MAPPED_SUCCESSFULLY)) {
